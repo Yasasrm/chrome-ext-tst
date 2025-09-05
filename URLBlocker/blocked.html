@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Site Blocked</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: #e74c3c;
+      margin: 0 0 20px 0;
+    }
+    
+    .blocked-url {
+      background: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 20px 0;
+      word-break: break-all;
+      font-family: monospace;
+      color: #666;
+    }
+    
+    .actions {
+      margin-top: 30px;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    
+    .btn-primary {
+      background: #3498db;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #2980b9;
+    }
+    
+    .btn-warning {
+      background: #f39c12;
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background: #d68910;
+    }
+    
+    .stats {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">🚫</div>
+    <h1>Site Blocked</h1>
+    <p>This website has been blocked to help you stay focused and productive.</p>
+    
+    <div class="blocked-url" id="blockedUrl">
+      Loading...
+    </div>
+    
+    <div class="actions">
+      <button class="btn-primary" onclick="goBack()">Go Back</button>
+      <button class="btn-warning" onclick="requestBypass()">Request 5min Access</button>
+    </div>
+    
+    <div class="stats" id="stats">
+      <div>You've been more productive by avoiding distracting sites!</div>
+    </div>
+  </div>
+  
+  <script>
+    // Get blocked URL from query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const blockedUrl = urlParams.get('blocked');
+    const tabId = urlParams.get('tabId');
+    
+    if (blockedUrl) {
+      document.getElementById('blockedUrl').textContent = blockedUrl;
+    }
+    
+    function goBack() {
+      window.history.back();
+    }
+    
+    async function requestBypass() {
+      try {
+        await chrome.runtime.sendMessage({
+          type: 'BYPASS_SITE',
+          tabId: parseInt(tabId),
+          duration: 300000 // 5 minutes
+        });
+        
+        // Redirect to original site
+        window.location.href = blockedUrl;
+      } catch (error) {
+        console.error('Error requesting bypass:', error);
+      }
+    }
+    
+    // Load stats
+    async function loadStats() {
+      try {
+        const result = await chrome.storage.local.get(['blockedAttempts']);
+        const attempts = result.blockedAttempts || [];
+        const today = new Date().toLocaleDateString();
+        const todayAttempts = attempts.filter(a => a.date === today);
+        
+        document.getElementById('stats').innerHTML = `
+          <div><strong>Today's Statistics:</strong></div>
+          <div>Sites blocked: ${todayAttempts.length}</div>
+          <div>Time saved: ~${Math.round(todayAttempts.length * 2.5)} minutes</div>
+        `;
+      } catch (error) {
+        console.error('Error loading stats:', error);
+      }
+    }
+    
+    loadStats();
+  </script>
+</body>
+</html>

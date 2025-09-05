@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 400px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      margin: 0;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .toggle {
+      position: relative;
+      width: 50px;
+      height: 24px;
+      background: #ccc;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .toggle.active {
+      background: #4CAF50;
+    }
+    
+    .toggle::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: white;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.3s;
+    }
+    
+    .toggle.active::before {
+      transform: translateX(26px);
+    }
+    
+    .section {
+      margin-bottom: 20px;
+    }
+    
+    .section h3 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    .blocking-mode {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .mode-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 12px;
+    }
+    
+    .mode-btn.active {
+      background: #4CAF50;
+      color: white;
+      border-color: #4CAF50;
+    }
+    
+    .site-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .site-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .site-item:last-child {
+      border-bottom: none;
+    }
+    
+    .remove-btn {
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .add-site {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    
+    .add-site input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .add-btn {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+    
+    .stats {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .bypass-btn {
+      background: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h2>Website Blocker</h2>
+    <div class="toggle-container">
+      <span>Enabled</span>
+      <div class="toggle" id="enableToggle"></div>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h3>Blocking Mode</h3>
+    <div class="blocking-mode">
+      <button class="mode-btn" data-mode="redirect">Block Page</button>
+      <button class="mode-btn" data-mode="close">Close Tab</button>
+      <button class="mode-btn" data-mode="warning">Show Warning</button>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h3>Blocked Sites</h3>
+    <div class="add-site">
+      <input type="text" id="newSite" placeholder="Enter domain (e.g., facebook.com)">
+      <button class="add-btn" id="addSite">Add</button>
+    </div>
+    <div class="site-list" id="siteList"></div>
+  </div>
+  
+  <div class="section">
+    <h3>Current Tab</h3>
+    <div id="currentTabInfo">Loading...</div>
+    <button class="bypass-btn" id="bypassBtn" style="display: none;">
+      Bypass for 5 minutes
+    </button>
+  </div>
+  
+  <div class="section">
+    <h3>Statistics</h3>
+    <div class="stats" id="stats">
+      Loading statistics...
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
